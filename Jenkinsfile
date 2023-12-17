@@ -14,14 +14,14 @@ pipeline{
         }
         stage('Checkout From Git'){
             steps{
-                git branch: 'main', url: 'https://github.com/rameshkumarvermagithub/DotNet-monitoring.git'
+                git branch: 'main', url: 'https://github.com/rameshkumarvermagithub/Python-System-Monitoring.git'
             }
         }
         stage("Sonarqube Analysis "){
             steps{
                 withSonarQubeEnv('sonar-server') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Dotnet-Webapp \
-                    -Dsonar.projectKey=Dotnet-Webapp '''
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Python-Webapp \
+                    -Dsonar.projectKey=Python-Webapp '''
                 }
             }
         }
@@ -54,7 +54,7 @@ pipeline{
         }
         stage("TRIVY"){
             steps{
-                sh "trivy image rameshkumarverma/dotnet-monitoring:latest > trivy.txt" 
+                sh "trivy image rameshkumarverma/python-system-monitoring:latest > trivy.txt" 
             }
         }
         stage("Docker Push"){
@@ -68,17 +68,8 @@ pipeline{
         }
         stage("Deploy to container"){
             steps{
-                sh "docker run -d --name dotnet -p 5000:5000 rameshkumarverma/dotnet-monitoring:latest"
+                sh "docker run -d --name python1 -p 5000:5000 rameshkumarverma/python-system-monitoring:latest"
             } 
-        }
-        stage('Deploy to k8s'){
-            steps{
-                dir('K8S') {
-                  withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
-                    sh 'kubectl apply -f deployment.yaml'    
-                   }
-                }   
-            }
         }
     }
 }
