@@ -71,5 +71,14 @@ pipeline{
                 sh "docker run -d --name python1 -p 5000:5000 rameshkumarverma/python-system-monitoring:latest"
             } 
         }
+         stage('Deploy to k8s'){
+            steps{
+                dir('K8S') {
+                  withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
+                    sh 'kubectl apply -f deployment.yaml'    
+                   }
+                }   
+            }
+        }
     }
 }
